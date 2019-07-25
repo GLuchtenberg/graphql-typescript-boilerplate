@@ -1,5 +1,4 @@
 import { Connection } from "typeorm";
-import * as bcrypt from "bcryptjs";
 
 import { createOrmConnection } from "../../utils/orm-utils";
 import { testRequest } from "../../test-utils/graphql-request";
@@ -41,7 +40,7 @@ describe("login", () => {
   it("Should return error when the user password doesnt match", async () => {
     const user = await User.create({
       email: "asdlogin@bob.com",
-      password: await bcrypt.hash("jlkajoioiqwe", 10)
+      password: "jlkajoioiqwe"
     }).save();
     const response = await testRequest(TEST_HOST, mutation(user.email, "2131"));
     const expectedError = [
@@ -56,8 +55,8 @@ describe("login", () => {
     const password = "jlkajoioiqwe";
     const user = await User.create({
       email: "loginconfirm@bob.com",
-      password: await bcrypt.hash(password, 10),
-      confirmed: false
+      confirmed: false,
+      password
     }).save();
     const response = await testRequest(
       TEST_HOST,
@@ -75,8 +74,8 @@ describe("login", () => {
     const password = "jlkajoioiqwe";
     const user = await User.create({
       email: "loginconfirmed@bob.com",
-      password: await bcrypt.hash(password, 10),
-      confirmed: true
+      confirmed: true,
+      password
     });
     await user.save();
     const response = await testRequest(
